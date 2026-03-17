@@ -33,16 +33,12 @@ build-release-cli:
 	cargo build --release -p nono-cli
 
 # Cross-compilation: Linux ARM64 (aarch64-unknown-linux-gnu)
-# On native Linux ARM64: uses cargo (need libdbus-1-dev, pkg-config, rustup target add aarch64-unknown-linux-gnu).
-# On other hosts (x86_64 Linux, macOS): uses cross. If cross fails with "may not be able to run on this system",
+# Uses `cross` which handles both native (ARM64) and cross-compilation (e.g. x86_64).
+# On native Linux ARM64, you may need to install `libdbus-1-dev` and `pkg-config`.
+# If `cross` fails with "may not be able to run on this system",
 # install from git: cargo install cross --git https://github.com/cross-rs/cross
 build-arm64:
-	@HOST=$$(rustc -vV 2>/dev/null | sed -n 's/^host: *//p'); \
-	if [ "$$HOST" = "aarch64-unknown-linux-gnu" ]; then \
-		cargo build --release --target aarch64-unknown-linux-gnu -p nono-cli; \
-	else \
-		cross build --release --target aarch64-unknown-linux-gnu -p nono-cli; \
-	fi
+	@cross build --release --target aarch64-unknown-linux-gnu -p nono-cli
 
 # Test targets
 test: test-lib test-cli test-ffi
